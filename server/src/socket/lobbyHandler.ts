@@ -10,8 +10,6 @@ export function registerLobbyHandlers(socket: Socket) {
 	const onQueue = () => {
 		queue.push(socket);
 
-		console.log(socket.data);
-
 		if (queue.length === 2) {
 			const roomId = generateId();
 			queue[0].join(roomId);
@@ -47,6 +45,9 @@ export function registerLobbyHandlers(socket: Socket) {
 
 		player.choice = choice;
 
+		user.record[choice] += 1;
+		await user.save();
+
 		// Payoff table
 		// Both cooperate: 10
 		// Both defect: -5
@@ -54,26 +55,39 @@ export function registerLobbyHandlers(socket: Socket) {
 
 		if (game.every((p) => p.choice !== '')) {
 			const [player1, player2] = game;
+			const user1 = await User.findById(player1.socket.data.user);
+			const user2 = await User.findById(player2.socket.data.user);
+
+			if (!user1 || !user2) return;
 
 			if (player1.choice === 'cooperate' && player2.choice === 'cooperate') {
 				player1.socket.emit('result', 10);
 				player2.socket.emit('result', 10);
-			}
 
-			if (player1.choice === 'defect' && player2.choice === 'defect') {
+				user1.score += 10;
+				user2.score += 10;
+			} else if (player1.choice === 'defect' && player2.choice === 'defect') {
 				player1.socket.emit('result', -5);
 				player2.socket.emit('result', -5);
-			}
 
-			if (player1.choice === 'cooperate' && player2.choice === 'defect') {
+				user1.score -= 5;
+				user2.score -= 5;
+			} else if (player1.choice === 'cooperate' && player2.choice === 'defect') {
 				player1.socket.emit('result', -10);
 				player2.socket.emit('result', 20);
-			}
 
-			if (player1.choice === 'defect' && player2.choice === 'cooperate') {
+				user1.score -= 10;
+				user2.score += 20;
+			} else if (player1.choice === 'defect' && player2.choice === 'cooperate') {
 				player1.socket.emit('result', 20);
 				player2.socket.emit('result', -10);
+
+				user1.score += 20;
+				user2.score -= 10;
 			}
+
+			await user1.save();
+			await user2.save();
 		}
 	};
 

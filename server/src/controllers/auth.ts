@@ -5,7 +5,6 @@ import { User } from '../models/User';
 
 const signUp = async (req: Request, res: Response) => {
 	// create new user if not exists
-	console.log(req.body);
 
 	const { username, password } = req.body;
 

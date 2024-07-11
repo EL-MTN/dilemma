@@ -33,6 +33,10 @@ export default function Dashboard() {
 		socket.on('result', (data) => {
 			alert(`Payoff: ${data}`);
 		});
+
+		socket.on('connect_error', (err) => {
+			console.log(err.message);
+		});
 	}, []);
 
 	function queueUp() {
