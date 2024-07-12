@@ -58,4 +58,16 @@ const signIn = async (req: Request, res: Response) => {
 	res.status(200).json({ token });
 };
 
-export { signIn, signUp };
+const me = async (req: Request, res: Response) => {
+	const user = await User.findById(req.user).select('-password');
+
+	if (!user) {
+		return res.status(404).json({
+			message: 'User not found',
+		});
+	}
+
+	res.status(200).json(user);
+};
+
+export { signIn, signUp, me };

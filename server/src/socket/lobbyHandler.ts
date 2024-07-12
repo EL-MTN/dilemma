@@ -7,7 +7,7 @@ const queue: Socket[] = [];
 const games = new Map<string, { socket: Socket; choice: '' | 'cooperate' | 'defect' }[]>();
 
 export function registerLobbyHandlers(socket: Socket) {
-	const onQueue = () => {
+	const onQueue = async () => {
 		queue.push(socket);
 
 		if (queue.length === 2) {
@@ -15,8 +15,11 @@ export function registerLobbyHandlers(socket: Socket) {
 			queue[0].join(roomId);
 			queue[1].join(roomId);
 
-			queue[0].emit('gameStart', { opponent: queue[1].id });
-			queue[1].emit('gameStart', { opponent: queue[0].id });
+			const opponent1 = await User.findById(queue[0].data.user).select('-password -_id');
+			const opponent2 = await User.findById(queue[1].data.user).select('-password -_id');
+
+			queue[0].emit('gameStart', { opponent: opponent2 });
+			queue[1].emit('gameStart', { opponent: opponent1 });
 
 			games.set(roomId, [
 				{ socket: queue[0], choice: '' },

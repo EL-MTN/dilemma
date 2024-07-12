@@ -11,6 +11,20 @@ export default function Dashboard() {
 	const [message, setMessage] = useState('');
 	const [opponent, setOpponent] = useState('');
 	const [gameState, setGameState] = useState<'start' | 'queue' | 'none'>('none');
+	const [self, setSelf] = useState({
+		username: '',
+		record: { cooperate: 0, defect: 0 },
+		score: 0,
+	});
+
+	useEffect(() => {
+		fetch('http://localhost:1025/auth/me', {
+			headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+		}).then(async (res) => {
+			const data = await res.json();
+			setSelf(data);
+		});
+	}, []);
 
 	useEffect(() => {
 		socket.auth = { token: localStorage.getItem('token') };
@@ -18,7 +32,8 @@ export default function Dashboard() {
 
 		socket.on('gameStart', (data) => {
 			setGameState('start');
-			setOpponent(data.opponent);
+			console.log(data.opponent);
+			setOpponent(data.opponent.username);
 		});
 
 		socket.on('message', (data) => {
@@ -52,7 +67,7 @@ export default function Dashboard() {
 		<div>
 			{message}
 			<br />
-			Self: {socket.id}
+			Self: {self.username}
 			<br />
 			Opponent: {opponent}
 			<br />

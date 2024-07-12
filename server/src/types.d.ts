@@ -5,3 +5,12 @@ declare module 'jsonwebtoken' {
 		id: string;
 	}
 }
+
+declare global {
+	declare namespace Express {
+		export interface Request {
+			user: string;
+			token: string;
+		}
+	}
+}

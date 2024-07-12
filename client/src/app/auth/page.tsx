@@ -1,15 +1,48 @@
 'use client';
 
+import {
+	Box,
+	Button,
+	Flex,
+	FormControl,
+	FormLabel,
+	Heading,
+	Input,
+	Link,
+	Stack,
+	Text,
+	useColorModeValue,
+} from '@chakra-ui/react';
+
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import z from 'zod';
 
 export default function Auth() {
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
 	const [signUpOrSignIn, setSignUpOrSignIn] = useState('signup');
+	const [loading, setLoading] = useState(false);
 	const router = useRouter();
 
+	const schema = z.object({
+		username: z.string().min(1),
+		password: z.string().min(5),
+	});
+
 	async function submit() {
+		setLoading(true);
+
+		const result = schema.safeParse({
+			username,
+			password,
+		});
+		if (result.error) {
+			alert('Invalid input');
+			setLoading(false);
+			return;
+		}
+
 		try {
 			const res = await fetch(`http://localhost:1025/auth/${signUpOrSignIn}`, {
 				method: 'POST',
@@ -27,60 +60,93 @@ export default function Auth() {
 			if (data.token) {
 				localStorage.setItem('token', data.token);
 				router.push('/dashboard');
+			} else {
+				alert(data.message);
+				setLoading(false);
 			}
 		} catch (e) {
-			throw e;
+			alert('Credentials failed');
+			setLoading(false);
 		}
 	}
 
 	return (
-		<div>
-			<label htmlFor="username">Username</label>
-			<input
-				type="text"
-				id="username"
-				name="username"
-				onChange={(e) => {
-					setUsername(e.target.value);
-				}}
-				required
-			/>
-
-			<label htmlFor="password">Password</label>
-			<input
-				type="password"
-				id="password"
-				name="password"
-				onChange={(e) => {
-					setPassword(e.target.value);
-				}}
-				required
-			/>
-			<br />
-
-			{signUpOrSignIn === 'signup' ? (
-				<button onClick={submit}>Sign Up</button>
-			) : (
-				<button onClick={submit}>Sign In</button>
-			)}
-			<br />
-			{signUpOrSignIn === 'signup' ? (
-				<button
-					onClick={() => {
-						setSignUpOrSignIn('signin');
-					}}
+		<Flex
+			minH={'100vh'}
+			align={'center'}
+			justify={'center'}
+			bg={useColorModeValue('gray.50', 'gray.800')}
+		>
+			<Stack spacing={8} py={12} px={6} w={'lg'}>
+				<Stack align={'center'}>
+					<Heading fontSize={'4xl'}>
+						{signUpOrSignIn === 'signup' ? 'Sign up ' : 'Sign in'}
+					</Heading>
+				</Stack>
+				<Box
+					rounded={'lg'}
+					bg={useColorModeValue('white', 'gray.700')}
+					boxShadow={'lg'}
+					p={8}
 				>
-					Have an account? Sign In
-				</button>
-			) : (
-				<button
-					onClick={() => {
-						setSignUpOrSignIn('signup');
-					}}
-				>
-					Don't have an account yet? Sign Up
-				</button>
-			)}
-		</div>
+					<Stack spacing={5}>
+						<FormControl id="username" isRequired>
+							<FormLabel>Username</FormLabel>
+							<Input
+								type="text"
+								value={username}
+								onChange={(e) => {
+									setUsername(e.target.value);
+								}}
+							/>
+						</FormControl>
+						<FormControl id="password" isRequired>
+							<FormLabel>Password</FormLabel>
+							<Input
+								type="password"
+								value={password}
+								onChange={(e) => {
+									setPassword(e.target.value);
+								}}
+							/>
+						</FormControl>
+						{signUpOrSignIn === 'signup' ? (
+							<Link
+								color={'blue.400'}
+								onClick={() => {
+									setSignUpOrSignIn('signin');
+								}}
+							>
+								Have an account? Sign in instead.
+							</Link>
+						) : (
+							<Link
+								color={'blue.400'}
+								onClick={() => {
+									setSignUpOrSignIn('signup');
+								}}
+							>
+								Need an account? Sign up.
+							</Link>
+						)}
+
+						{loading ? (
+							<Text>Loading...</Text>
+						) : (
+							<Button
+								bg={'blue.400'}
+								color={'white'}
+								_hover={{
+									bg: 'blue.500',
+								}}
+								onClick={submit}
+							>
+								{signUpOrSignIn === 'signup' ? 'Sign up' : 'Sign in'}
+							</Button>
+						)}
+					</Stack>
+				</Box>
+			</Stack>
+		</Flex>
 	);
 }
