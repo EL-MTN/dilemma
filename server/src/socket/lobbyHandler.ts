@@ -91,6 +91,9 @@ export function registerLobbyHandlers(socket: Socket) {
 
 			await user1.save();
 			await user2.save();
+
+			player1.socket.leave(room);
+			player2.socket.leave(room);
 		}
 	};
 

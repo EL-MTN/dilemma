@@ -130,20 +130,17 @@ export default function Auth() {
 							</Link>
 						)}
 
-						{loading ? (
-							<Text>Loading...</Text>
-						) : (
-							<Button
-								bg={'blue.400'}
-								color={'white'}
-								_hover={{
-									bg: 'blue.500',
-								}}
-								onClick={submit}
-							>
-								{signUpOrSignIn === 'signup' ? 'Sign up' : 'Sign in'}
-							</Button>
-						)}
+						<Button
+							bg={'blue.400'}
+							color={'white'}
+							_hover={{
+								bg: 'blue.500',
+							}}
+							isLoading={loading}
+							onClick={submit}
+						>
+							{signUpOrSignIn === 'signup' ? 'Sign up' : 'Sign in'}
+						</Button>
 					</Stack>
 				</Box>
 			</Stack>

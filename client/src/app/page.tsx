@@ -1,3 +1,5 @@
+import { Button } from '@chakra-ui/react';
+
 export default function Home() {
 	return (
 		<div className="bg-white h-full">
@@ -8,7 +10,9 @@ export default function Home() {
 					Try it out for yourself.
 				</h2>
 				<div className="mt-10 flex items-center gap-x-6">
-					<a href="/auth"></a>
+					<a href="/auth">
+						<Button>Sign In</Button>
+					</a>
 					<a href="#" className="text-sm font-semibold leading-6 text-gray-900">
 						Learn more <span aria-hidden="true">→</span>
 					</a>
