@@ -3,11 +3,16 @@
 import { Box, Button, Center, Flex, Heading, Stack, Text } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import io from 'socket.io-client';
-import { UserProfile } from '../components/UserProfile';
 
 const socket = io('http://localhost:1025', {
 	autoConnect: false,
 });
+
+interface UserProfile {
+	username: string;
+	record: { cooperate: number; defect: number };
+	score: number;
+}
 
 export default function Dashboard() {
 	const [message, setMessage] = useState('');
