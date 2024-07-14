@@ -2,6 +2,7 @@ import { Socket } from 'socket.io';
 import { generateId } from '../lib/nanoid';
 import { connectedIds } from '../middlewares/socketAuth';
 import { User } from '../models/User';
+import { GameRecord } from '../models/GameRecord';
 
 const queue: Socket[] = [];
 const games = new Map<string, { socket: Socket; choice: '' | 'cooperate' | 'defect' }[]>();
@@ -103,6 +104,21 @@ export function registerLobbyHandlers(socket: Socket) {
 
 			player1.socket.leave(room);
 			player2.socket.leave(room);
+
+			games.delete(room);
+
+			await new GameRecord({
+				player1: {
+					record: user1.record,
+					score: user1.score,
+					choice: player1.choice,
+				},
+				player2: {
+					record: user2.record,
+					score: user2.score,
+					choice: player2.choice,
+				},
+			}).save();
 		}
 	};
 
