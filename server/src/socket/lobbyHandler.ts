@@ -8,6 +8,8 @@ const games = new Map<string, { socket: Socket; choice: '' | 'cooperate' | 'defe
 
 export function registerLobbyHandlers(socket: Socket) {
 	const onQueue = async () => {
+		if (queue.indexOf(socket) !== -1) return;
+
 		queue.push(socket);
 
 		if (queue.length === 2) {
@@ -28,6 +30,13 @@ export function registerLobbyHandlers(socket: Socket) {
 
 			queue.shift();
 			queue.shift();
+		}
+	};
+
+	const cancelQueue = async () => {
+		const index = queue.indexOf(socket);
+		if (index !== -1) {
+			queue.splice(index, 1);
 		}
 	};
 
@@ -114,6 +123,7 @@ export function registerLobbyHandlers(socket: Socket) {
 	};
 
 	socket.on('queue', onQueue);
+	socket.on('cancelQueue', cancelQueue);
 	socket.on('choice', onChoice);
 	socket.on('disconnecting', onDisconnecting);
 	socket.on('disconnect', onDisconnect);

@@ -1,20 +1,6 @@
 'use client';
 
-import {
-	Center,
-	Box,
-	useColorModeValue,
-	Avatar,
-	Heading,
-	Stack,
-	Badge,
-	Text,
-	Button,
-	Flex,
-	Container,
-	VStack,
-	Spacer,
-} from '@chakra-ui/react';
+import { Box, Button, Center, Flex, Heading, Stack, Text } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 import { UserProfile } from '../components/UserProfile';
@@ -41,7 +27,7 @@ export default function Dashboard() {
 			const data = await res.json();
 			setSelf(data);
 		});
-	}, []);
+	}, [gameState]);
 
 	useEffect(() => {
 		socket.auth = { token: localStorage.getItem('token') };
@@ -78,50 +64,15 @@ export default function Dashboard() {
 		socket.emit('queue');
 	}
 
+	function cancelQueue() {
+		setGameState('none');
+		socket.emit('cancelQueue');
+	}
+
 	function sendChoice(choice: 'cooperate' | 'defect') {
 		socket.emit('choice', choice);
 		setChoiceSent(true);
 	}
-
-	// return (
-	// 	<div>
-	// 		{message}
-	// 		<br />
-	// 		Self: {self.username}
-	// 		<br />
-	// 		Opponent: {opponent}
-	// 		<br />
-	// 		{gameState == 'none' && (
-	// 			<button
-	// 				onClick={() => {
-	// 					queueUp();
-	// 				}}
-	// 			>
-	// 				Queue Up
-	// 			</button>
-	// 		)}
-	// 		{gameState == 'queue' && <div>Queued Up</div>}
-	// 		{gameState == 'start' && (
-	// 			<div>
-	// 				<h1>Game Started</h1>
-	// 				<button
-	// 					onClick={() => {
-	// 						sendChoice('cooperate');
-	// 					}}
-	// 				>
-	// 					Cooperate
-	// 				</button>
-	// 				<button
-	// 					onClick={() => {
-	// 						sendChoice('defect');
-	// 					}}
-	// 				>
-	// 					Defect
-	// 				</button>
-	// 			</div>
-	// 		)}
-	// 	</div>
-	// );
 
 	return (
 		<Flex h="100%" justify={'space-around'}>
@@ -146,7 +97,12 @@ export default function Dashboard() {
 
 						{gameState === 'queue' && (
 							<Stack direction={'row'}>
-								<Button flex={1} fontSize={'sm'} rounded={'full'} onClick={queueUp}>
+								<Button
+									flex={1}
+									fontSize={'sm'}
+									rounded={'full'}
+									onClick={cancelQueue}
+								>
 									In Queue... Cancel?
 								</Button>
 							</Stack>
