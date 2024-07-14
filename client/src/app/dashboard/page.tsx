@@ -4,7 +4,7 @@ import { Box, Button, Center, Flex, Heading, Stack, Text } from '@chakra-ui/reac
 import { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:1025', {
+const socket = io(`http://${process.env.NEXT_PUBLIC_HOST_URL}`, {
 	autoConnect: false,
 });
 
@@ -25,8 +25,12 @@ export default function Dashboard() {
 		score: 0,
 	});
 
+	if (localStorage.getItem('token') === null) {
+		window.location.href = '/auth';
+	}
+
 	useEffect(() => {
-		fetch('http://localhost:1025/auth/me', {
+		fetch(`http://${process.env.NEXT_PUBLIC_HOST_URL}/auth/me`, {
 			headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
 		}).then(async (res) => {
 			const data = await res.json();

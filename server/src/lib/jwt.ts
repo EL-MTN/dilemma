@@ -6,6 +6,6 @@ export function createToken(payload: any) {
 	return sign(payload, PRIVATE_KEY, { expiresIn: '24h' });
 }
 
-export function verifyTOken(token: string) {
+export function verifyToken(token: string) {
 	return verify(token, PRIVATE_KEY);
 }

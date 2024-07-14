@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import cors from 'cors';
 import express from 'express';
 import mongoose from 'mongoose';
@@ -22,10 +25,10 @@ app.use(cors());
 app.use(express.json());
 app.use(router);
 
-mongoose.connect('mongodb://localhost:27017/dilemma').then(() => {
+mongoose.connect(process.env.MONGODB_URI!).then(() => {
 	console.log('connected to mongodb');
 });
 
-server.listen(1025, () => {
+server.listen(process.env.PORT, () => {
 	console.log('server running at http://localhost:1025');
 });
