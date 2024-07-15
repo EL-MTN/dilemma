@@ -57,6 +57,7 @@ export default function Dashboard() {
 		socket.on('gameEnd', () => {
 			setOpponent(null);
 			setGameState('none');
+			setChoiceSent(false);
 		});
 
 		socket.on('result', (data) => {
