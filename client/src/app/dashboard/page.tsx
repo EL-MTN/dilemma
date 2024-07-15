@@ -32,7 +32,7 @@ export default function Dashboard() {
 	}, []);
 
 	useEffect(() => {
-		fetch(`http://${process.env.NEXT_PUBLIC_HOST_URL}/auth/me`, {
+		fetch(`${process.env.NEXT_PUBLIC_HOST_URL}/auth/me`, {
 			headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
 		}).then(async (res) => {
 			const data = await res.json();

@@ -44,7 +44,7 @@ export default function Auth() {
 		}
 
 		try {
-			const res = await fetch(`http://${process.env.NEXT_PUBLIC_HOST_URL}/auth/${signUpOrSignIn}`, {
+			const res = await fetch(`${process.env.NEXT_PUBLIC_HOST_URL}/auth/${signUpOrSignIn}`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',

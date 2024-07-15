@@ -16,7 +16,7 @@ export default function Leaderboard() {
 	const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
 
 	useEffect(() => {
-		fetch(`http://${process.env.NEXT_PUBLIC_HOST_URL}/leaderboard`).then(async (res) => {
+		fetch(`${process.env.NEXT_PUBLIC_HOST_URL}/leaderboard`).then(async (res) => {
 			const data = await res.json();
 			setLeaderboard(data);
 		});
