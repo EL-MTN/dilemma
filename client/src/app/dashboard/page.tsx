@@ -4,7 +4,7 @@ import { Box, Button, Center, Flex, Heading, Stack, Text } from '@chakra-ui/reac
 import { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 
-const socket = io(`http://${process.env.NEXT_PUBLIC_HOST_URL}`, {
+const socket = io(`https://${process.env.NEXT_PUBLIC_HOST_URL}`, {
 	autoConnect: false,
 });
 
