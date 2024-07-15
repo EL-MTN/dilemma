@@ -25,9 +25,11 @@ export default function Dashboard() {
 		score: 0,
 	});
 
-	if (localStorage.getItem('token') === null) {
-		window.location.href = '/auth';
-	}
+	useEffect(() => {
+		if (localStorage.getItem('token') === null) {
+			window.location.href = '/auth';
+		}
+	}, []);
 
 	useEffect(() => {
 		fetch(`http://${process.env.NEXT_PUBLIC_HOST_URL}/auth/me`, {
