@@ -4,7 +4,7 @@ dotenv.config();
 import cors from 'cors';
 import express from 'express';
 import mongoose from 'mongoose';
-import { createServer } from 'node:https';
+import { createServer } from 'node:http';
 import { readFileSync } from 'node:fs';
 import { Server } from 'socket.io';
 import { socketAuth } from './middlewares/socketAuth';
@@ -12,13 +12,7 @@ import { router } from './routes';
 import { onConnection } from './socket';
 
 const app = express();
-const server = createServer(
-	{
-		key: readFileSync(__dirname + '/localhost-key.pem'),
-		cert: readFileSync(__dirname + '/localhost.pem'),
-	},
-	app
-);
+const server = createServer(app);
 const io = new Server(server, {
 	cors: {
 		origin: '*',
