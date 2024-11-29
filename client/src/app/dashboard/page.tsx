@@ -26,6 +26,22 @@ export default function Dashboard() {
 	});
 
 	useEffect(() => {
+		const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+			if (gameState === 'start') {
+				event.preventDefault();
+				event.returnValue = ''; // This is required for some browsers
+			}
+		};
+
+		window.addEventListener('beforeunload', handleBeforeUnload);
+
+		// Clean up the event listener on unmount
+		return () => {
+			window.removeEventListener('beforeunload', handleBeforeUnload);
+		};
+	}, [gameState]);
+
+	useEffect(() => {
 		if (localStorage.getItem('token') === null) {
 			window.location.href = '/auth';
 		}
@@ -69,6 +85,13 @@ export default function Dashboard() {
 
 		socket.on('connect_error', (err) => {
 			console.log(err.message);
+		});
+
+		socket.on('opponent_disconnect', () => {
+			alert('Opponent disconnected.');
+			setOpponent(null);
+			setGameState('none');
+			setChoiceSent(false);
 		});
 	}, []);
 

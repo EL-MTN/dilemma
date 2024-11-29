@@ -11,7 +11,7 @@ export default function Home() {
 				</h2>
 				<div className="mt-10 flex items-center gap-x-6">
 					<a href="/auth">
-						<Button>Sign In</Button>
+						<Button>Sign Up</Button>
 					</a>
 					<a href="#" className="text-sm font-semibold leading-6 text-gray-900">
 						Learn more <span aria-hidden="true">→</span>

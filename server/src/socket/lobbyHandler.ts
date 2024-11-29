@@ -12,7 +12,6 @@ export function registerLobbyHandlers(socket: Socket) {
 		if (queue.indexOf(socket) !== -1) return;
 
 		queue.push(socket);
-
 		if (queue.length === 2) {
 			const roomId = generateId();
 			queue[0].join(roomId);
@@ -43,6 +42,7 @@ export function registerLobbyHandlers(socket: Socket) {
 
 	const onChoice = async (choice: 'cooperate' | 'defect') => {
 		const room = Array.from(socket.rooms)[1];
+
 		const game = games.get(room);
 
 		if (!game) {
@@ -123,9 +123,23 @@ export function registerLobbyHandlers(socket: Socket) {
 	};
 
 	const onDisconnecting = () => {
-		socket.rooms.forEach((room) => {
-			socket.to(room).emit('gameEnd');
-			games.delete(room);
+		socket.rooms.forEach(async (joinedRoom) => {
+			const room = games.get(joinedRoom);
+
+			if (!room) return;
+
+			for (const player of room) {
+				if (player.socket !== socket) {
+					await User.findById(player.socket.data.user).updateOne({ $inc: { score: 5 } });
+					await User.findById(socket.data.user).updateOne({ $inc: { score: -5 } });
+					player.socket.emit('opponentDisconnect');
+				}
+
+				socket.to(joinedRoom).emit('gameEnd');
+				player.socket.leave(joinedRoom);
+			}
+
+			games.delete(joinedRoom);
 		});
 	};
 
