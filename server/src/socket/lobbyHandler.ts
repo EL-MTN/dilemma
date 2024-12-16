@@ -122,6 +122,20 @@ export function registerLobbyHandlers(socket: Socket) {
 		}
 	};
 
+	const onMessage = (message: string) => {
+		socket.rooms.forEach(async (joinedRoom) => {
+			const room = games.get(joinedRoom);
+
+			if (!room) return;
+
+			for (const player of room) {
+				if (player.socket !== socket) {
+					player.socket.emit('message', message);
+				}
+			}
+		});
+	};
+
 	const onDisconnecting = () => {
 		socket.rooms.forEach(async (joinedRoom) => {
 			const room = games.get(joinedRoom);
@@ -155,6 +169,7 @@ export function registerLobbyHandlers(socket: Socket) {
 	socket.on('queue', onQueue);
 	socket.on('cancelQueue', cancelQueue);
 	socket.on('choice', onChoice);
+	socket.on('message', onMessage);
 	socket.on('disconnecting', onDisconnecting);
 	socket.on('disconnect', onDisconnect);
 }

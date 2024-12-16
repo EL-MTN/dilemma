@@ -83,6 +83,10 @@ export default function Dashboard() {
 			setChoiceSent(false);
 		});
 
+		socket.on('message', (data) => {
+			alert(data);
+		});
+
 		socket.on('connect_error', (err) => {
 			console.log(err.message);
 		});
@@ -108,6 +112,10 @@ export default function Dashboard() {
 	function sendChoice(choice: 'cooperate' | 'defect') {
 		socket.emit('choice', choice);
 		setChoiceSent(true);
+	}
+
+	function sendMessage(message: string) {
+		socket.emit('message', message);
 	}
 
 	return (
