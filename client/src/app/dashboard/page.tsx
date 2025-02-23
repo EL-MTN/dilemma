@@ -25,6 +25,8 @@ export default function Dashboard() {
 		score: 0,
 	});
 
+	const [messages, setMessages] = useState<string[]>([]);
+
 	useEffect(() => {
 		const handleBeforeUnload = (event: BeforeUnloadEvent) => {
 			if (gameState === 'start') {
@@ -67,10 +69,11 @@ export default function Dashboard() {
 		});
 
 		socket.on('message', (data) => {
-			setMessage(data);
+			setMessages((prev) => [...prev, `Them: ${data}`]);
 		});
 
 		socket.on('gameEnd', () => {
+			setMessages([]);
 			setOpponent(null);
 			setGameState('none');
 			setChoiceSent(false);
@@ -78,21 +81,23 @@ export default function Dashboard() {
 
 		socket.on('result', (data) => {
 			alert(`Payoff: ${data}`);
+			setMessages([]);
 			setOpponent(null);
 			setGameState('none');
 			setChoiceSent(false);
 		});
 
 		socket.on('message', (data) => {
-			alert(data);
+			console.log(`Message: ${data}`);
 		});
 
 		socket.on('connect_error', (err) => {
 			console.log(err.message);
 		});
 
-		socket.on('opponent_disconnect', () => {
+		socket.on('opponentDisconnect', () => {
 			alert('Opponent disconnected.');
+			setMessages([]);
 			setOpponent(null);
 			setGameState('none');
 			setChoiceSent(false);
@@ -115,6 +120,8 @@ export default function Dashboard() {
 	}
 
 	function sendMessage(message: string) {
+		setMessages((prev) => [...prev, `You: ${message}`]);
+		setMessage('');
 		socket.emit('message', message);
 	}
 
@@ -191,6 +198,47 @@ export default function Dashboard() {
 					</Stack>
 				</Box>
 			</Center>
+			{opponent && (
+				<Center py={6}>
+					<Box boxShadow={'2xl'} rounded={'lg'} p={6} textAlign={'center'}>
+						<Stack width={'full'} spacing={2}>
+							<Heading fontSize={'2xl'}>Messages</Heading>
+							<Box
+								height="200px"
+								overflowY="scroll"
+								border="1px solid"
+								borderColor="gray.200"
+								p={2}
+								rounded="md"
+							>
+								{messages.map((msg, index) => (
+									<Text key={index} textAlign={'left'}>
+										{msg}
+									</Text>
+								))}
+							</Box>
+							<form
+								onSubmit={(e) => {
+									e.preventDefault();
+									sendMessage(message);
+								}}
+							>
+								<Flex mt={4}>
+									<input
+										type="text"
+										placeholder="Type a message"
+										style={{ flex: 1, marginRight: '8px' }}
+										onChange={(e) => setMessage(e.target.value)}
+										value={message}
+									/>
+
+									<Button onClick={() => sendMessage(message)}>Send</Button>
+								</Flex>
+							</form>
+						</Stack>
+					</Box>
+				</Center>
+			)}
 			{opponent && (
 				<Center py={6}>
 					<Box boxShadow={'2xl'} rounded={'lg'} p={6} textAlign={'center'}>
